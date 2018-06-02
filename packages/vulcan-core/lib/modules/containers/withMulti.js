@@ -4,7 +4,7 @@
 
 Paginated items container
 
-Options: 
+Options:
 
   - queryName: an arbitrary name for the query
   - collection: the collection to fetch the documents from
@@ -14,7 +14,7 @@ Options:
   - pollInterval: how often the data should be updated, in ms (set to 0 to disable polling)
   - terms: an object that defines which documents to fetch
 
-Props Received: 
+Props Received:
 
   - terms: an object that defines which documents to fetch
 
@@ -32,7 +32,7 @@ Terms object can have the following properties:
   - query: String # search query
   - postId: String
   - limit: String
-         
+
 */
 
 import React, { Component } from 'react';
@@ -50,8 +50,8 @@ export default function withMulti(options) {
   const {
     collectionName,
     limit = 10,
-    pollInterval = getSetting('pollInterval', 20000),
-    enableTotal = true,
+    pollInterval = getSetting('pollInterval', 0),
+    totalResolver = true,
     enableCache = false,
     extraQueries,
   } = options;
