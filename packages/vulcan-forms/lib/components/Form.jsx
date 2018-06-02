@@ -59,6 +59,8 @@ import { getParentPath } from '../modules/path_utils';
 
 // unsetCompact
 const unsetCompact = (object, path) => {
+  const parentPath = path.slice(0, path.lastIndexOf('.'));
+
   unset(object, path);
   compactParent(object, path);
 };
@@ -162,7 +164,7 @@ class SmartForm extends Component {
   /*
 
   Get a list of all editable fields
-  
+
   */
   getEditableFields = (schema) => {
     return getEditableFields(schema || this.state.schema, this.props.currentUser, this.state.initialDocument)
@@ -207,9 +209,9 @@ class SmartForm extends Component {
     this.state.deletedValues.forEach(path => {
       if (path.includes('.')) {
         /*
-        
+
         If deleted field is a nested field, nested array, or nested array item, try to compact its parent array
-        
+
         - Nested field: 'address.city'
         - Nested array: 'addresses.1'
         - Nested array item: 'addresses.1.city'
@@ -441,7 +443,7 @@ class SmartForm extends Component {
     - path: for field-specific errors, the path of the field with the issue
     - properties: additional data. Will be passed to vulcan-i18n as values
     - message: if id cannot be used as i81n key, message will be used
-    
+
   */
   throwError = error => {
     let formErrors = getErrors(error);
@@ -543,7 +545,7 @@ class SmartForm extends Component {
 
   // TODO: only need to check nextProps.prefilledProps?
   // TODO: see https://reactjs.org/blog/2018/06/07/you-probably-dont-need-derived-state.html
-  
+
   */
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (!isEqual(this.props, nextProps)) {
@@ -552,18 +554,18 @@ class SmartForm extends Component {
   }
 
   /*
-  
+
   Manually update the current values of one or more fields(i.e. on change or blur).
-  
+
   */
   updateCurrentValues = (newValues, options = {}) => {
 
     // default to overwriting old value with new
     const { mode = 'overwrite' } = options;
-    
+
     // keep the previous ones and extend (with possible replacement) with new ones
     this.setState(prevState => {
-      
+
       // keep only the relevant properties
       const { currentValues, currentDocument, deletedValues } = cloneDeep(prevState);
       const newState = { currentValues, currentDocument, deletedValues, foo: {} };
@@ -598,9 +600,9 @@ class SmartForm extends Component {
   };
 
   /*
-  
+
   Warn the user if there are unsaved changes
-  
+
   */
   handleRouteLeave = () => {
     if (this.isChanged()) {
@@ -629,9 +631,9 @@ class SmartForm extends Component {
   };
 
   /*
-  
+
   Install a route leave hook to warn the user if there are unsaved changes
-  
+
   */
   componentDidMount = () => {
     let warnUnsavedChanges = getSetting('forms.warnUnsavedChanges');
@@ -663,9 +665,9 @@ class SmartForm extends Component {
   };
 
   /*
-  
+
   Returns true if there are any differences between the initial document and the current one
-  
+
   */
   isChanged = () => {
     const initialDocument = this.state.initialDocument;
@@ -681,9 +683,9 @@ class SmartForm extends Component {
   };
 
   /*
-  
+
   Refetch the document from the database (in case it was updated by another process or to reset the form)
-  
+
   */
   refetchForm = () => {
     if (this.props.data && this.props.data.refetch) {
@@ -692,7 +694,7 @@ class SmartForm extends Component {
   };
 
   /*
-  
+
   Clear and reset the form
   By default, clear errors and keep current values and deleted values
 
@@ -875,7 +877,7 @@ class SmartForm extends Component {
             />
           ))}
 
-          {this.props.repeatErrors && this.renderErrors()}
+          {this.props.repeatErrors && <Components.FormErrors errors={this.state.errors} />}
 
           <Components.FormSubmit
             submitLabel={this.props.submitLabel}
