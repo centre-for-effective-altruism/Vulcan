@@ -46,12 +46,12 @@ export const dynamicLoader = importComponent => loadable({
 export const renderDynamicComponent = (importComponent, props = {}) =>
   React.createElement(dynamicLoader(importComponent), props);
 
-export const getDynamicComponent = componentImport => {
+export const getDynamicComponent = (componentImport, props) =>
   // eslint-disable-next-line no-console
   console.warn(
     'getDynamicComponent is deprecated, use renderDynamicComponent instead.',
     'If you want to retrieve the component instead that of just rendering it,',
     'use dynamicLoader. See this issue to know how to do it: https://github.com/VulcanJS/Vulcan/issues/1997',
   );
-  return renderDynamicComponent(componentImport);
+  return renderDynamicComponent(componentImport, props);
 };
