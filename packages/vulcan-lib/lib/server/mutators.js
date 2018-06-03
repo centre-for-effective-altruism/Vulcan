@@ -62,25 +62,25 @@ export const createMutator = async ({ collection, document, data, currentUser, v
     newDocument = runCallbacks({ name: `*.create.validate`, iterator: newDocument, properties: { currentUser, validationErrors }});
     // OpenCRUD backwards compatibility
     newDocument = runCallbacks(`${collectionName.toLowerCase()}.new.validate`, newDocument, currentUser, validationErrors);
-    
+
     if (validationErrors.length) {
-      const NewDocumentValidationError = createError('app.validation_error', {message: 'app.new_document_validation_error'});
+      const NewDocumentValidationError = createError('app.validation_error', {message: JSON.stringify(validationErrors)});
       throw new NewDocumentValidationError({data: {break: true, errors: validationErrors}});
     }
 
   }
-  
+
   // if user is logged in, check if userId field is in the schema and add it to document if needed
   if (currentUser) {
     const userIdInSchema = Object.keys(schema).find(key => key === 'userId');
     if (!!userIdInSchema && !newDocument.userId) newDocument.userId = currentUser._id;
   }
 
-  /* 
-  
+  /*
+
   run onCreate step
 
-  note: cannot use forEach with async/await. 
+  note: cannot use forEach with async/await.
   See https://stackoverflow.com/a/37576787/649299
 
   note: clone arguments in case callbacks modify them
@@ -163,7 +163,7 @@ export const updateMutator = async ({ collection, selector, data, set = {}, unse
   if (!document) {
     throw new Error(`Could not find document to update for selector: ${JSON.stringify(selector)}`);
   }
-  
+
   debug('');
   debugGroup(`--------------- start \x1b[36m${collectionName} Update Mutator\x1b[0m ---------------`);
   debug('// collectionName: ', collectionName);
@@ -180,12 +180,13 @@ export const updateMutator = async ({ collection, selector, data, set = {}, unse
     // OpenCRUD backwards compatibility
     runCallbacks(`${collectionName.toLowerCase()}.edit.validate`, dataToModifier(data), document, currentUser, validationErrors);
 
+    // LESSWRONG - added custom message (showing all validation errors instead of a generic message)
     if (validationErrors.length) {
-      // eslint-disable-next-line no-console
-      console.log('// validationErrors');
-      // eslint-disable-next-line no-console
-      console.log(validationErrors);
-      const EditDocumentValidationError = createError('app.validation_error', { message: 'app.edit_document_validation_error' });
+      //eslint-disable-next-line no-console
+      console.error('// validationErrors')
+      //eslint-disable-next-line no-console
+      console.error(validationErrors)
+      const EditDocumentValidationError = createError('app.validation_error', {message: JSON.stringify(validationErrors)});
       throw new EditDocumentValidationError({data: {break: true, errors: validationErrors}});
     }
 
