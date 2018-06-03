@@ -23,12 +23,14 @@ import cookiesMiddleware from 'universal-cookie-express';
 // import Cookies from 'universal-cookie';
 import { _hashLoginToken, _tokenExpiration } from './accounts_helpers';
 
+import timber from 'timber';
 export let executableSchema;
 
 registerSetting('apolloEngine.logLevel', 'INFO', 'Log level (one of INFO, DEBUG, WARN, ERROR');
 registerSetting('apolloTracing', Meteor.isDevelopment, 'Tracing by Apollo. Default is true on development and false on prod', true);
 
 // see https://github.com/apollographql/apollo-cache-control
+const timberApiKey = getSetting('timber.apiKey');
 const engineApiKey = getSetting('apolloEngine.apiKey');
 const engineLogLevel = getSetting('apolloEngine.logLevel', 'INFO')
 const engineConfig = {
@@ -124,6 +126,12 @@ const createApolloServer = (givenOptions = {}, givenConfig = {}) => {
   
   // compression
   graphQLServer.use(compression());
+  // LESSWRONG: Timber logging integration
+  if (timberApiKey) {
+    //eslint-disable-next-line no-console
+    console.info("Starting timber integration")
+    graphQLServer.use(timber.middlewares.express())
+  }
 
   // GraphQL endpoint
   graphQLServer.use(config.path, bodyParser.json({limit: '5mb'}), graphqlExpress(async (req) => {
