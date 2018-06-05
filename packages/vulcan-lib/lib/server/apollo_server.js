@@ -126,13 +126,6 @@ const createApolloServer = (givenOptions = {}, givenConfig = {}) => {
   //   return ipAddress;
   // }
 
-  // LESSWRONG: Timber logging integration
-  if (timberApiKey) {
-    //eslint-disable-next-line no-console
-    console.info("Starting timber integration")
-    graphQLServer.use(timber.middlewares.express())
-  }
-
 
   // LESSWRONG: ACTIVATE IP FILTER
   // graphQLServer.use(IpFilter(["127.0.0.1"], {detectIp: customDetection}));
@@ -229,6 +222,13 @@ const createApolloServer = (givenOptions = {}, givenConfig = {}) => {
 
     return options;
   }));
+
+  // LESSWRONG: Timber logging integration
+  if (timberApiKey) {
+    //eslint-disable-next-line no-console
+    console.info("Starting timber integration")
+    graphQLServer.use(timber.middlewares.express())
+  }
 
   // Start GraphiQL if enabled
   if (config.graphiql) {
