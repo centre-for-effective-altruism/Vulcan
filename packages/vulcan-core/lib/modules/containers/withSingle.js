@@ -8,7 +8,7 @@ export default function withSingle(options) {
 
   const {
     collectionName,
-    pollInterval = getSetting('pollInterval', 20000),
+    pollInterval = getSetting('pollInterval', 0),
     enableCache = false,
     extraQueries,
   } = options;
