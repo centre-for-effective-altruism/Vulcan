@@ -54,6 +54,7 @@ export default function withMulti(options) {
     totalResolver = false,
     enableCache = false,
     extraQueries,
+    ssr = false,
   } = options;
 
   const collection = options.collection || getCollection(collectionName);
@@ -116,6 +117,7 @@ export default function withMulti(options) {
             },
             // note: pollInterval can be set to 0 to disable polling (20s by default)
             pollInterval,
+            ssr,
             reducer: (previousResults, action) => {
               // see queryReducer function defined below
               return queryReducer(

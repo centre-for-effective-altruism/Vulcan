@@ -22,6 +22,9 @@ export const withVote = component => {
       ${getFragmentText(`WithVote${collection.typeName}`)}
     `).join("\n")}
   `, {
+    options: () => ({
+      ssr: false
+    }),
     props: ({ownProps, mutate}) => ({
       vote: ({document, voteType, collection, currentUser, voteId = Random.id()}) => {
 
