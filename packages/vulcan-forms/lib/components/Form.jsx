@@ -49,9 +49,13 @@ import pick from 'lodash/pick';
 import isEqualWith from 'lodash/isEqualWith';
 
 import { convertSchema, formProperties } from '../modules/schema_utils';
+import { getDeletedValues } from '../modules/utils';
+import { getParentPath } from '../modules/path_utils';
 
 // unsetCompact
 const unsetCompact = (object, path) => {
+  const parentPath = getParentPath(path);
+
   unset(object, path);
   compactParent(object, path);
 };
@@ -145,39 +149,14 @@ class Form extends Component {
   Get a list of all editable fields
 
   */
-  getEditableFields = (schema) => {
-    return getEditableFields(schema || this.state.schema, this.props.currentUser, this.state.initialDocument)
-  }
-
-  /*
-
-  Get a list of all mutable (insertable/editable depending on current form type) fields
-
-  */
-  getMutableFields = (schema) => {
-    return this.getFormType() === 'edit' ? this.getEditableFields(schema) : this.getInsertableFields(schema);
-  }
-
-  /*
-
-  Initialize document
-
-  */
-  initDocument = ({ prefilledProps, document }) => {
-    this.currentDocument = merge(
-      {},
-      prefilledProps,
-      document,
-    );
-  }
-
-  /*
-
-  Get the current document
-
-  */
   getDocument = () => {
-    return this.currentDocument;
+    return merge(
+      {},
+      this.state.initialDocument,
+      this.defaultValues,
+      this.state.currentValues,
+      getDeletedValues(this.state.deletedValues),
+    );
   };
 
   /*
