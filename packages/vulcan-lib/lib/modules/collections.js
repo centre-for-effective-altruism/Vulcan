@@ -92,7 +92,7 @@ Mongo.Collection.prototype.addView = function (viewName, view) {
 /**
  * @summary Allow mongodb aggregation
  * @param {Array} pipelines mongodb pipeline
- * @param {Object} options mongodb option object 
+ * @param {Object} options mongodb option object
  */
 Mongo.Collection.prototype.aggregate = function (pipelines, options) {
   var coll = this.rawCollection();
@@ -125,7 +125,7 @@ export const createCollection = options => {
 
   // initialize new Mongo collection
   const collection = collectionName === 'Users' && Meteor.users ? Meteor.users : new Mongo.Collection(dbCollectionName ? dbCollectionName : collectionName.toLowerCase());
-  
+
   // decorate collection with options
   collection.options = options;
 
@@ -247,9 +247,9 @@ export const createCollection = options => {
     }
 
     if (terms.query) {
-        
+
       const query = escapeStringRegexp(terms.query);
-      const currentSchema = collection.simpleSchema()._schema; 
+      const currentSchema = collection.simpleSchema()._schema;
       const searchableFieldNames = _.filter(_.keys(currentSchema), fieldName => currentSchema[fieldName].searchable);
       if (searchableFieldNames.length) {
         parameters = Utils.deepExtend(true, parameters, {
@@ -261,7 +261,7 @@ export const createCollection = options => {
     }
 
     // limit number of items to 1000 by default
-    const maxDocuments = getSetting('maxDocumentsPerRequest', 1000);
+    const maxDocuments = getSetting('maxDocumentsPerRequest', 5000);
     const limit = terms.limit || parameters.options.limit;
     parameters.options.limit = (!limit || limit < 1 || limit > maxDocuments) ? maxDocuments : limit;
 
