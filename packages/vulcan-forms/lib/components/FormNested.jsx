@@ -43,7 +43,8 @@ registerComponent('FormNestedItem', FormNestedItem);
 
 class FormNested extends PureComponent {
   addItem = () => {
-    this.props.updateCurrentValues({ [`${this.props.path}.${this.props.value.length}`]: {} });
+    const value = this.getCurrentValue()
+    this.props.updateCurrentValues({ [`${this.props.path}.${value.length}`]: {} }, { mode: 'merge'});
   };
 
   removeItem = index => {

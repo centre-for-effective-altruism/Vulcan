@@ -38,6 +38,7 @@ import { intlShape } from 'meteor/vulcan:i18n';
 import Formsy from 'formsy-react';
 import { getEditableFields, getInsertableFields } from '../modules/utils.js';
 import cloneDeep from 'lodash/cloneDeep';
+import get from 'lodash/get';
 import set from 'lodash/set';
 import unset from 'lodash/unset';
 import compact from 'lodash/compact';
@@ -51,15 +52,17 @@ import { convertSchema, formProperties } from '../modules/schema_utils';
 
 // unsetCompact
 const unsetCompact = (object, path) => {
-  const parentPath = path.slice(0, path.lastIndexOf('.'));
-
   unset(object, path);
+  compactParent(object, path);
+};
+
+const compactParent = (object, path) => {
+  const parentPath = getParentPath(path);
 
   // note: we only want to compact arrays, not objects
   const compactIfArray = x => Array.isArray(x) ? compact(x) : x;
 
   update(object, parentPath, compactIfArray);
-
 };
 
 const computeStateFromProps = nextProps => {
@@ -97,6 +100,8 @@ class Form extends Component {
       currentValues: {},
       ...computeStateFromProps(props),
     };
+
+    this.initDocument(props);
   }
 
   defaultValues = {};
@@ -128,9 +133,43 @@ class Form extends Component {
 
   /*
 
-  Get the document initially passed as props
+  Get a list of all insertable fields
 
   */
+  getInsertableFields = (schema) => {
+    return getInsertableFields(schema || this.state.schema, this.props.currentUser);
+  }
+
+  /*
+
+  Get a list of all editable fields
+
+  */
+  getEditableFields = (schema) => {
+    return getEditableFields(schema || this.state.schema, this.props.currentUser, this.state.initialDocument)
+  }
+
+  /*
+
+  Get a list of all mutable (insertable/editable depending on current form type) fields
+
+  */
+  getMutableFields = (schema) => {
+    return this.getFormType() === 'edit' ? this.getEditableFields(schema) : this.getInsertableFields(schema);
+  }
+
+  /*
+
+  Initialize document
+
+  */
+  initDocument = ({ prefilledProps, document }) => {
+    this.currentDocument = merge(
+      {},
+      prefilledProps,
+      document,
+    );
+  }
 
   /*
 
@@ -138,14 +177,7 @@ class Form extends Component {
 
   */
   getDocument = () => {
-    const deletedValues = {};
-    this.state.deletedValues.forEach(path => {
-      set(deletedValues, path, null);
-    });
-
-    const document = merge({}, this.state.initialDocument, this.defaultValues, this.state.currentValues, deletedValues);
-
-    return document;
+    return this.currentDocument;
   };
 
   /*
@@ -161,10 +193,20 @@ class Form extends Component {
     const fields = this.getFieldNames({ excludeHiddenFields: false, replaceIntlFields: true });
     let data = pick(this.getDocument(), ...fields);
 
-    // remove any deleted values
-    // (deleted nested fields cannot be added to $unset, instead we need to modify their value directly)
+    // compact deleted values
     this.state.deletedValues.forEach(path => {
-      unsetCompact(data, path);
+      if (path.includes('.')) {
+        /*
+
+        If deleted field is a nested field, nested array, or nested array item, try to compact its parent array
+
+        - Nested field: 'address.city'
+        - Nested array: 'addresses.1'
+        - Nested array item: 'addresses.1.city'
+
+        */
+       compactParent(data, path);
+      }
     });
 
     // run data object through submitForm callbacks
@@ -472,7 +514,11 @@ class Form extends Component {
   Manually update the current values of one or more fields(i.e. on change or blur).
 
   */
-  updateCurrentValues = newValues => {
+  updateCurrentValues = (newValues, options = {}) => {
+
+    // default to overwriting old value with new
+    const { mode = 'overwrite' } = options;
+
     // keep the previous ones and extend (with possible replacement) with new ones
     this.setState(prevState => {
       const newState = cloneDeep(prevState);
@@ -482,10 +528,22 @@ class Form extends Component {
         if (value === null) {
           // delete value
           unset(newState.currentValues, path);
+          set(this.currentDocument, path, null);
           newState.deletedValues = [...prevState.deletedValues, path];
         } else {
-          // in case value had previously been deleted, "undelete" it
+          // 1. update currentValues
           set(newState.currentValues, path, value);
+
+          // 2. update currentDocument
+          // For arrays and objects, give option to merge instead of overwrite
+          if (mode === 'merge' && (Array.isArray(value) || isObject(value))) {
+            const oldValue = get(this.currentDocument, path);
+            set(this.currentDocument, path, merge(oldValue, value));
+          } else {
+            set(this.currentDocument, path, value);
+          }
+
+          // 3. in case value had previously been deleted, "undelete" it
           newState.deletedValues = _.without(prevState.deletedValues, path);
         }
       });
@@ -627,7 +685,7 @@ class Form extends Component {
   mutationSuccessCallback = (result, mutationType) => {
 
     this.setState(prevState => ({ disabled: false }));
-    
+
     const document = result.data[Object.keys(result.data)[0]]; // document is always on first property
 
     // for new mutation, run refetch function if it exists
