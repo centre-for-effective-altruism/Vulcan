@@ -6,7 +6,6 @@ import { getSetting, getFragment, getFragmentName, getCollection, singleClientTe
 
 export default function withSingle(options) {
 
-<<<<<<< HEAD:packages/vulcan-core/lib/modules/containers/withSingle.js
   const {
     collectionName,
     pollInterval = getSetting('pollInterval', 0),
@@ -14,9 +13,6 @@ export default function withSingle(options) {
     extraQueries,
     ssr = false
   } = options;
-=======
-  const { collectionName, pollInterval = getSetting('pollInterval', 0), enableCache = false, extraQueries, ssr = false } = options;
->>>>>>> Changed all containers to not query for data in SSR by default:packages/vulcan-core/lib/modules/containers/withDocument.js
 
   const collection = options.collection || getCollection(collectionName);
   const typeName = collection.options.typeName;

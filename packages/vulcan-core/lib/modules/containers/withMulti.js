@@ -51,9 +51,9 @@ export default function withMulti(options) {
     collectionName,
     limit = 10,
     pollInterval = getSetting('pollInterval', 0),
-    totalResolver = false,
     enableCache = false,
     extraQueries,
+    enableTotal = false,
     ssr = false,
   } = options;
 

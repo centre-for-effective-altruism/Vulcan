@@ -46,7 +46,7 @@ export const dynamicLoader = importComponent => loadable({
 export const renderDynamicComponent = (importComponent, props = {}) =>
   React.createElement(dynamicLoader(importComponent), props);
 
-export const getDynamicComponent = (componentImport, props) =>
+export const getDynamicComponent = (componentImport, props) => {
   // eslint-disable-next-line no-console
   console.warn(
     'getDynamicComponent is deprecated, use renderDynamicComponent instead.',
