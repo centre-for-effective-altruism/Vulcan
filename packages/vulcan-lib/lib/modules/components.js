@@ -26,19 +26,24 @@ export const ComponentsTable = {} // storage for infos about components
  * }
  *
  */
-export const registerComponent = (name, rawComponent, ...hocs) => {
-  // console.log('// registering component');
-  // console.log(name);
-  // console.log('raw component', rawComponent);
-  // console.log('higher order components', hocs); 
-
-  // store the component in the table
-  ComponentsTable[name] = {
-    name,
-    rawComponent,
-    hocs,
-  };
-};
+export function registerComponent(name, rawComponent, ...hocs) {
+  if (typeof arguments[0] === 'object') {
+    const { name, component, hocs } = arguments[0];
+    ComponentsTable[name] = {
+      name,
+      rawComponent: component,
+      hocs,
+    };
+  } else {
+    // OpenCRUD backwards compatibility
+    // store the component in the table
+    ComponentsTable[name] = {
+      name,
+      rawComponent,
+      hocs,
+    };
+  }
+}
 
 /**
  * Get a component registered with registerComponent(name, component, ...hocs).
@@ -51,7 +56,11 @@ export const getComponent = (name) => {
   if (!component) {
     throw new Error(`Component ${name} not registered.`)
   }
-  const hocs = component.hocs.map(hoc => Array.isArray(hoc) ? hoc[0](hoc[1]) : hoc);
+  const hocs = component.hocs.map(hoc => {
+    if(!Array.isArray(hoc)) return hoc;
+    const [actualHoc, ...args] = hoc;
+    return actualHoc(...args);
+  });
   return compose(...hocs)(component.rawComponent)
 };
 
@@ -136,4 +145,32 @@ export const instantiateComponent = (component, props) => {
   }
 };
 
-
+/**
+ * Creates a component that will render the registered component with the given name.
+ *
+ * This function  may be useful when in need for some registered component, but in contexts
+ * where they have not yet been initialized, for example at compile time execution. In other
+ * words, when using `Components.ComponentName` is not allowed (because it has not yet been
+ * populated, hence would be `undefined`), then `delayedComponent('ComponentName')` can be
+ * used instead.
+ *
+ * @example Create a container for a registered component
+ *  // SomeContainer.js
+ *  import compose from 'recompose/compose';
+ *  import { delayedComponent } from 'meteor/vulcan:core';
+ *
+ *  export default compose(
+ *    // ...some hocs with container logic
+ *  )(delayedComponent('ComponentName')); // cannot use Components.ComponentName in this context!
+ *
+ * @example {@link dynamicLoader}
+ * @param {String} name Component name
+ * @return {Function}
+ *  Functional component that will render the given registered component
+ */
+export const delayedComponent = name => {
+  return props => {
+    const Component = Components[name] || null;
+    return Component && <Component {...props} />;
+  };
+};

@@ -111,6 +111,7 @@ FormGroup.propTypes = {
   currentUser: PropTypes.object,
 };
 
+module.exports = FormGroup
 registerComponent('FormGroup', FormGroup, withStyles(styles));
 
 const IconRight = ({ width = 24, height = 24 }) => (
