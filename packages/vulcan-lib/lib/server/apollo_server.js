@@ -164,6 +164,8 @@ const createApolloServer = (givenOptions = {}, givenConfig = {}) => {
     "https://lessestwrong.com",
     "http://www.lessestwrong.com",
     "https://www.lessestwrong.com",
+    "http://www.baserates.org",
+    "https://www.baserates.org",
   ]}))
 
   // GraphQL endpoint
