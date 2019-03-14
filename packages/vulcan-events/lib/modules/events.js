@@ -37,7 +37,11 @@ export const addIdentifyFunction = f => {
 };
 
 export const addPageFunction = f => {
-  const f2 = (empty, route) => f(route);
+  const f2 = (empty, route) => {
+    console.log('>page function call')
+    console.log('>  route', route)
+    f(route)
+  }
 
   // rename f2 to same name as f
   // see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty

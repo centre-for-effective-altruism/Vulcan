@@ -12,6 +12,7 @@ import { addPageFunction, addInitFunction } from 'meteor/vulcan:events';
 */
 
 function googleAnaticsTrackPage() {
+  console.log('we got analytics up in here?')
   if (window && window.ga) {
     window.ga('send', 'pageview', {
       page: window.location.pathname,

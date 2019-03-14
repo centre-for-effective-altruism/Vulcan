@@ -64,6 +64,9 @@ Meteor.startup(() => {
       const { apolloClient, store } = getRenderContext();
       const app = runCallbacks('router.client.wrapper', appGenerator({
         onUpdate: () => {
+          console.log('routing onUpdate')
+          console.log('  store', store)
+          // console.log('  apollo client', apolloClient)
           // the first argument is an item to iterate on, needed by vulcan:lib/callbacks
           // note: this item is not used in this specific callback: router.onUpdate
           runCallbacks('router.onUpdate', {}, store, apolloClient);

@@ -17,10 +17,32 @@ const convertUniqueSelector = selector => {
 DatabaseConnectors.mongo = {
   get: async (collection, selector = {}, options = {}, skipConversion) => {
     const convertedSelector = skipConversion ? selector : convertUniqueSelector(selector)
+    // console.log('DB QUERY GET {')
+    // console.log('  COLLECTION', collection._name)
+    // console.log('  SELECTOR', convertedSelector)
+    // console.log('  OPTIONS', options)
+    // console.log('END GET } ---')
     return await collection.findOne(convertedSelector, options);
   },
   find: async (collection, selector = {}, options = {}) => {
-    return await collection.find(convertSelector(selector), options).fetch();
+    // if (collection._name === 'posts') {
+    //   console.log('DB QUERY FIND {')
+    //   console.log('  COLLECTION', collection._name)
+    //   console.log('  SELECTOR', selector)
+    //   console.log('  OPTIONS', options)
+    //   console.log('END FIND PT 1} ====')
+    // }
+    const documents = await collection.find(convertSelector(selector), options).fetch();
+    // if (collection._name !== 'comments') {
+      // comments aren't what we're looking for
+      // console.log('DB QUERY FIND RESULTS {')
+      // console.log('  COLLECTION', collection._name)
+      // console.log('  SELECTOR', selector)
+      // console.log('  OPTIONS', options)
+      // console.log('  DOCUMENTS', documents)
+      // console.log('END FIND PT 2} ####')
+    // }
+    return documents
   },
   count: async (collection, selector = {}, options = {}) => {
     return await collection.find(convertSelector(selector), options).count();

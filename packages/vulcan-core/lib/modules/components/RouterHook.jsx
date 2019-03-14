@@ -16,6 +16,10 @@ class RouterHook extends PureComponent {
     const { currentRoute, client } = props;
     // the first argument is an item to iterate on, needed by vulcan:lib/callbacks
     // note: this item is not used in this specific callback: router.onUpdate
+    console.log('RouterHook onupdate')
+    console.log('  currentRoute', currentRoute)
+    // console.log('  client.store', client.store)
+    // console.log('  client', client)
     runCallbacks('router.onUpdate', {}, currentRoute, client.store, client);
   };
 

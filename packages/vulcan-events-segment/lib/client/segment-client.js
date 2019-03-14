@@ -12,15 +12,23 @@ Track Page
 
 */
 function segmentTrackPage(route) {
+  console.log('>>segementTrackPage')
+  // console.log('>>  route:', route)
   const { name, path } = route;
+  // console.log('>>  getsiteurl', Utils.getSiteUrl())
+  console.log('>>  route.path:', route.path)
   const properties = {
     url: Utils.getSiteUrl().slice(0, -1) + path,
     path,
   };
+  // console.log('>>  ...')
+  // console.log('>>  name:', route)
+  // console.log('>>  properties:', properties)
   window.analytics.page(null, name, properties);
   return {};
 }
 addPageFunction(segmentTrackPage);
+console.log('segment client at startup')
 
 /*
 
