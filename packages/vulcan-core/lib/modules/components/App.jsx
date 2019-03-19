@@ -77,7 +77,10 @@ class App extends PureComponent {
   }
 
   render() {
+    const { location } = this.props
     const currentRoute = _.last(this.props.routes);
+    console.log('App.jsx render')
+    console.log('props', this.props)
     const LayoutComponent = currentRoute.layoutName
       ? Components[currentRoute.layoutName]
       : Components.Layout;
@@ -90,7 +93,7 @@ class App extends PureComponent {
       >
         <div className={`locale-${this.getLocale()}`}>
           <Components.HeadTags />
-          <Components.RouterHook currentRoute={currentRoute} />
+          <Components.RouterHook currentRoute={currentRoute} location={location} />
           <LayoutComponent {...this.props} currentRoute={currentRoute}>
             {this.props.children ? (
               this.props.children

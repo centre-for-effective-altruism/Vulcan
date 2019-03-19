@@ -61,15 +61,18 @@ Meteor.startup(() => {
       return history;
     },
     wrapperHook(appGenerator) {
-      const { apolloClient, store } = getRenderContext();
+      const context = getRenderContext();
+      const { apolloClient, store } = context
       const app = runCallbacks('router.client.wrapper', appGenerator({
         onUpdate: () => {
-          console.log('routing onUpdate')
-          console.log('  store', store)
+          // console.log('routing onUpdate')
+          // console.log('  context', context)
+          // console.log('  store', store)
           // console.log('  apollo client', apolloClient)
           // the first argument is an item to iterate on, needed by vulcan:lib/callbacks
           // note: this item is not used in this specific callback: router.onUpdate
-          runCallbacks('router.onUpdate', {}, store, apolloClient);
+          // TODO; the second argument is the route object, we do use that one
+          // runCallbacks('router.onUpdate', {}, {}, store, apolloClient);
         },
         render: applyRouterMiddleware(useScroll((prevRouterProps, nextRouterProps) => {
           // if the action is REPLACE, or this is the initialization of the router, return false so that we don't jump back to top of page

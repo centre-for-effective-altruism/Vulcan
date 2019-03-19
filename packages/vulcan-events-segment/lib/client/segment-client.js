@@ -13,10 +13,11 @@ Track Page
 */
 function segmentTrackPage(route) {
   console.log('>>segementTrackPage')
-  // console.log('>>  route:', route)
+  console.log('>>  route:', route)
   const { name, path } = route;
+  console.log('>>  name:', name)
   // console.log('>>  getsiteurl', Utils.getSiteUrl())
-  console.log('>>  route.path:', route.path)
+  // console.log('>>  route.path:', route.path)
   const properties = {
     url: Utils.getSiteUrl().slice(0, -1) + path,
     path,
