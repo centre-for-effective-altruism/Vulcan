@@ -12,11 +12,15 @@ Track Page
 
 */
 function segmentTrackPage(route) {
+  console.log('segmentTrackPage route', route)
   const { name, path } = route;
+  console.log('  name', name)
+  console.log('  path', path)
   const properties = {
     url: Utils.getSiteUrl().slice(0, -1) + path,
     path,
   };
+  console.log('  properties', properties)
   window.analytics.page(null, name, properties);
   return {};
 }
@@ -41,6 +45,7 @@ Track Event
 
 */
 function segmentTrack(eventName, eventProperties) {
+  console.log('segmentTrack() !!!!!!!')
   window.analytics.track(eventName, eventProperties);
 }
 addTrackFunction(segmentTrack);

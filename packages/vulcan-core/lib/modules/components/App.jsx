@@ -78,6 +78,7 @@ class App extends PureComponent {
 
   render() {
     const { location } = this.props
+    console.log('App.render() location', location)
     const currentRoute = _.last(this.props.routes);
     const LayoutComponent = currentRoute.layoutName
       ? Components[currentRoute.layoutName]

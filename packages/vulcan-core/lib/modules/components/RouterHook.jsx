@@ -12,10 +12,14 @@ class RouterHook extends PureComponent {
   }
 
   runOnUpdateCallback = props => {
-    const { client, location } = props;
+    const { currentRoute, client, location } = props;
+    console.log('runOnUpdateCallback location', location)
+    console.log('  currentRoute', currentRoute)
+    // TODO; understand and rename
+    const routePrime = {...currentRoute, path: location}
     // the first argument is an item to iterate on, needed by vulcan:lib/callbacks
     // note: this item is not used in this specific callback: router.onUpdate
-    runCallbacks('router.onUpdate', {}, location, client.store, client);
+    runCallbacks('router.onUpdate', {}, routePrime, client.store, client);
   };
 
   render() {
