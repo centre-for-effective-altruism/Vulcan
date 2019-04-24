@@ -5,7 +5,7 @@ import { withApollo } from 'react-apollo';
 class RouterHook extends PureComponent {
   constructor(props) {
     super(props);
-    this.runOnUpdateCallback(props);
+    // this.runOnUpdateCallback(props);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -13,10 +13,10 @@ class RouterHook extends PureComponent {
   }
 
   runOnUpdateCallback = props => {
-    const { currentRoute, client } = props;
+    const { client, location } = props;
     // the first argument is an item to iterate on, needed by vulcan:lib/callbacks
     // note: this item is not used in this specific callback: router.onUpdate
-    runCallbacks('router.onUpdate', {}, currentRoute, client.store, client);
+    runCallbacks('router.onUpdate', {}, location, client.store, client);
   };
 
   render() {
