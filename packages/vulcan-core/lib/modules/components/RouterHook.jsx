@@ -5,7 +5,6 @@ import { withApollo } from 'react-apollo';
 class RouterHook extends PureComponent {
   constructor(props) {
     super(props);
-    // this.runOnUpdateCallback(props);
   }
 
   componentWillReceiveProps(nextProps) {
