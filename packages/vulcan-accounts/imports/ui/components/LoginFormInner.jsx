@@ -263,7 +263,8 @@ export class AccountsLoginFormInner extends TrackerComponent {
     switch (field) {
       case 'password': break;
       default:
-        value = value.trim();
+        if (typeof value === 'string')
+          value = value.trim();
         break;
     }
     this.setState({ [field]: value });
@@ -338,6 +339,15 @@ export class AccountsLoginFormInner extends TrackerComponent {
 
     if (this.showEnrollAccountForm()) {
       loginFields.push(this.getSetPasswordField());
+    }
+    
+    const { customSignupFields } = this.props;
+    if (customSignupFields && formState == STATES.SIGN_UP) {
+      for (let i=0; i<customSignupFields.length; i++)
+        loginFields.push({
+          ...customSignupFields[i],
+          onChange: this.handleChange.bind(this, customSignupFields[i].id)
+        });
     }
 
     return _.indexBy(loginFields, 'id');
@@ -776,8 +786,11 @@ export class AccountsLoginFormInner extends TrackerComponent {
       // usernameOrEmail = null,
       password,
       formState,
-      onSubmitHook
+      onSubmitHook,
     } = this.state;
+    const {
+      customSignupFields
+    } = this.props;
 
     const self = this;
 
@@ -815,6 +828,16 @@ export class AccountsLoginFormInner extends TrackerComponent {
       error = true;
     } else {
       options.password = password;
+    }
+    
+    if (customSignupFields) {
+      if (!options.profile)
+        options.profile = {};
+      
+      for (let i=0; i<customSignupFields.length; i++) {
+        const fieldId = customSignupFields[i].id
+        options.profile[fieldId] = this.state[fieldId];
+      }
     }
 
     const SignUp = function(_options) {
