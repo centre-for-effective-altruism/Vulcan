@@ -535,13 +535,23 @@ export class AccountsLoginFormInner extends TrackerComponent {
    * Helper to get field values when switching states in the form.
    */
   getDefaultFieldValues() {
-    if (typeof localStorage !== 'undefined' && localStorage) {
-      const defaultFieldValues = JSON.parse(localStorage.getItem('accounts_ui') || null);
-      if (defaultFieldValues
-        && defaultFieldValues.passwordSignupFields === passwordSignupFields()) {
-        return defaultFieldValues;
+    let defaultFieldValues = {};
+    
+    const { customSignupFields } = this.props;
+    if (customSignupFields) {
+      for (let i=0; i<customSignupFields.length; i++) {
+        defaultFieldValues[customSignupFields[i].id] = customSignupFields[i].defaultValue;
       }
     }
+    if (typeof localStorage !== 'undefined' && localStorage) {
+      const savedDefaultFieldValues = JSON.parse(localStorage.getItem('accounts_ui') || null);
+      if (savedDefaultFieldValues
+        && savedDefaultFieldValues.passwordSignupFields === passwordSignupFields()) {
+        defaultFieldValues = {...defaultFieldValues, ...savedDefaultFieldValues};
+      }
+    }
+    
+    return defaultFieldValues;
   }
 
   /**
