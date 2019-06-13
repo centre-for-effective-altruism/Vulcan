@@ -85,7 +85,14 @@ Meteor.startup(() => {
     preRender(req, res, app) {
       runCallbacks('router.server.preRender', { req, res, app });
       const startTime = new Date()
-      const apolloData = Promise.await(getDataFromTree(app));
+      let apolloData
+      try {
+        apolloData = Promise.await(getDataFromTree(app));
+      } catch(err) {
+        res.statusCode = 404
+        throw Error(err)
+      }
+
       const preRenderTime = new Date() - startTime
       //eslint-disable-next-line no-console
       console.log("preRender time: ", preRenderTime)
